@@ -1,24 +1,56 @@
-#ifndef BOOTPACK_H_
-#define BOOTPACK_H_
+#ifndef BOOT_PACK_H_
+#define BOOT_PACK_H_
 
+/* asmhead.nas */
+struct BOOTINFO { /* 0x0ff0-0x0fff */
+	char cyls; /* ブートセクタはどこまでディスクを読んだのか */
+	char leds; /* ブート時のキーボードのLEDの状態 */
+	char vmode; /* ビデオモード  何ビットカラーか */
+	char reserve;
+	short scrnx, scrny; /* 画面解像度 */
+	char *vram;
+};
+#define ADR_BOOTINFO	0x00000ff0
+
+/* naskfunc.nas */
 void _io_hlt(void);
 void _io_cli(void);
+void _io_sti(void);
+void _io_stihlt(void);
+int _io_in8(int port);
 void _io_out8(int port, int data);
 int _io_load_eflags(void);
 void _io_store_eflags(int eflags);
+void _load_gdtr(int limit, int addr);
+void _load_idtr(int limit, int addr);
+int _load_cr0(void);
+void _store_cr0(int cr0);
+void _asm_inthandler20(void);
+void _asm_inthandler21(void);
+void _asm_inthandler27(void);
+void _asm_inthandler2c(void);
+unsigned int _memtest_sub(unsigned int start, unsigned int end);
 
-void write_screen();
+/* fifo.c */
+struct FIFO8 {
+	unsigned char *buf;
+	int p, q, size, free, flags;
+};
+void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
+int fifo8_put(struct FIFO8 *fifo, unsigned char data);
+int fifo8_get(struct FIFO8 *fifo);
+int fifo8_status(struct FIFO8 *fifo);
 
+/* graphic.c */
 void init_palette(void);
 void set_palette(int start, int end, unsigned char *rgb);
-void init_screen8(char *vram, int x, int y);
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1);
+void init_screen8(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
 void putfonts8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
-void putblock8_8(char *vram, int vxsize, int pxsize,
-                 int pysize, int px0, int py0, char *buf, int bxsize);
 void init_mouse_cursor8(char *mouse, char bc);
-
+void putblock8_8(char *vram, int vxsize, int pxsize,
+	int pysize, int px0, int py0, char *buf, int bxsize);
 #define COL8_000000		0
 #define COL8_FF0000		1
 #define COL8_00FF00		2
@@ -36,43 +68,29 @@ void init_mouse_cursor8(char *mouse, char bc);
 #define COL8_008484		14
 #define COL8_848484		15
 
-#define ADR_BOOTINFO	0x00000ff0
-
-struct BOOTINFO {
-  char cyls, leds, vmode, reserve;
-  short scrnx, scrny;
-  char *vram;
-};
-
+/* dsctbl.c */
 struct SEGMENT_DESCRIPTOR {
-  short limit_low, base_low;
-  char base_mid, access_right;
-  char limit_high, base_high;
+	short limit_low, base_low;
+	char base_mid, access_right;
+	char limit_high, base_high;
 };
-
 struct GATE_DESCRIPTOR {
-  short offset_low, selector;
-  char dw_count, access_right;
-  short offset_high;
+	short offset_low, selector;
+	char dw_count, access_right;
+	short offset_high;
 };
-
 void init_gdtidt(void);
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
 void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-void _load_gdtr(int limit, int addr);
-void _load_idtr(int limit, int addr);
-
-void write_screen(char* addr);
-
-/* fifo.c */
-struct FIFO8 {
-	unsigned char *buf;
-	int p, q, size, free, flags;
-};
-void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
-int fifo8_put(struct FIFO8 *fifo, unsigned char data);
-int fifo8_get(struct FIFO8 *fifo);
-int fifo8_status(struct FIFO8 *fifo);
+#define ADR_IDT			0x0026f800
+#define LIMIT_IDT		0x000007ff
+#define ADR_GDT			0x00270000
+#define LIMIT_GDT		0x0000ffff
+#define ADR_BOTPAK		0x00280000
+#define LIMIT_BOTPAK	0x0007ffff
+#define AR_DATA32_RW	0x4092
+#define AR_CODE32_ER	0x409a
+#define AR_INTGATE32	0x008e
 
 /* int.c */
 void init_pic(void);
@@ -107,6 +125,45 @@ void inthandler2c(int *esp);
 void enable_mouse(struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 extern struct FIFO8 mousefifo;
+
+/* memory.c */
+#define MEMMAN_FREES		4090	/* これで約32KB */
+#define MEMMAN_ADDR			0x003c0000
+struct FREEINFO {	/* あき情報 */
+	unsigned int addr, size;
+};
+struct MEMMAN {		/* メモリ管理 */
+	int frees, maxfrees, lostsize, losts;
+	struct FREEINFO free[MEMMAN_FREES];
+};
+unsigned int memtest(unsigned int start, unsigned int end);
+void memman_init(struct MEMMAN *man);
+unsigned int memman_total(struct MEMMAN *man);
+unsigned int memman_alloc(struct MEMMAN *man, unsigned int size);
+int memman_free(struct MEMMAN *man, unsigned int addr, unsigned int size);
+unsigned int memman_alloc_4k(struct MEMMAN *man, unsigned int size);
+int memman_free_4k(struct MEMMAN *man, unsigned int addr, unsigned int size);
+
+/* sheet.c */
+#define MAX_SHEETS		256
+struct SHEET {
+	unsigned char *buf;
+	int bxsize, bysize, vx0, vy0, col_inv, height, flags;
+	struct SHTCTL *ctl;
+};
+struct SHTCTL {
+	unsigned char *vram, *map;
+	int xsize, ysize, top;
+	struct SHEET *sheets[MAX_SHEETS];
+	struct SHEET sheets0[MAX_SHEETS];
+};
+struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize, int ysize);
+struct SHEET *sheet_alloc(struct SHTCTL *ctl);
+void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv);
+void sheet_updown(struct SHEET *sht, int height);
+void sheet_refresh(struct SHEET *sht, int bx0, int by0, int bx1, int by1);
+void sheet_slide(struct SHEET *sht, int vx0, int vy0);
+void sheet_free(struct SHEET *sht);
 
 /* timer.c */
 #define MAX_TIMER		500
