@@ -17,9 +17,12 @@ void KernelMain() {
   init_gdtidt();
   init_pic();
   _io_sti(); /* IDT/PICの初期化が終わったのでCPUの割り込み禁止を解除 */
+  return;
   fifo8_init(&keyfifo, 32, keybuf);
   fifo8_init(&mousefifo, 128, mousebuf);
+
   init_pit();
+
   _io_out8(PIC0_IMR, 0xf8); /* PITとPIC1とキーボードを許可(11111000) */
   _io_out8(PIC1_IMR, 0xef); /* マウスを許可(11101111) */
 

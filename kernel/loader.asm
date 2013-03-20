@@ -131,7 +131,7 @@ TestImage:
 
 ;;; execute kernel
 EXECUTE:
-         mov     eax, IMAGE_PMODE_BASE + 0x400
+         mov     eax, IMAGE_PMODE_BASE + 0x1000
 ;;;         jmp     IMAGE_PMODE_BASE + 0x400
         mov     ebp, eax
         call    ebp
