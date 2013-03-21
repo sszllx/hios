@@ -22,6 +22,7 @@ void KernelMain() {
   init_pit();
   _io_out8(PIC0_IMR, 0xf8); /* PITとPIC1とキーボードを許可(11111000) */
   _io_out8(PIC1_IMR, 0xef); /* マウスを許可(11101111) */
+  return;
 
   fifo8_init(&timerfifo, 8, timerbuf);
   timer = timer_alloc();

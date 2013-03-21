@@ -14,7 +14,6 @@ bits    32
 		GLOBAL	_memtest_sub
 		EXTERN	_inthandler20, _inthandler21
 		EXTERN	_inthandler27, _inthandler2c
-
 [SECTION .text]
 
 _io_hlt:	; void io_hlt(void);
@@ -91,9 +90,9 @@ _io_store_eflags:	; void io_store_eflags(int eflags);
 		RET
 
 _load_gdtr:		; void load_gdtr(int limit, int addr);
-		MOV		AX,[ESP+4]		; limit
-		MOV		[ESP+6],AX
-		LGDT	[ESP+6]
+ 		MOV		AX,[ESP+4]		; limit
+ 		MOV		[ESP+6],AX
+ 		LGDT	[ESP+6]
 		RET
 
 _load_idtr:		; void load_idtr(int limit, int addr);

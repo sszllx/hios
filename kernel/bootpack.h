@@ -74,6 +74,11 @@ struct SEGMENT_DESCRIPTOR {
 	char base_mid, access_right;
 	char limit_high, base_high;
 };
+struct gdtr {
+	unsigned short m_limit;
+	unsigned int m_base;
+};
+
 struct GATE_DESCRIPTOR {
 	short offset_low, selector;
 	char dw_count, access_right;
@@ -82,15 +87,17 @@ struct GATE_DESCRIPTOR {
 void init_gdtidt(void);
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
 void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-#define ADR_IDT			0x0026f800
+#define ADR_IDT			0xC0003C60
 #define LIMIT_IDT		0x000007ff
-#define ADR_GDT			0x00270000
+#define ADR_GDT			0xC0000000
 #define LIMIT_GDT		0x0000ffff
-#define ADR_BOTPAK		0x00280000
+#define ADR_BOTPAK		0xC0000000
 #define LIMIT_BOTPAK	0x0007ffff
 #define AR_DATA32_RW	0x4092
 #define AR_CODE32_ER	0x409a
 #define AR_INTGATE32	0x008e
+#define MAX_DESCRIPTORS 3
+
 
 /* int.c */
 void init_pic(void);
