@@ -55,7 +55,8 @@ main:
    	mov   	dword [ImageSize], ecx
 	cmp	ax, 0
 	je	EnterStage3
-        jmp     $
+        cli
+        hlt
 ;;; 需要容错处理
 
 EnterStage3:

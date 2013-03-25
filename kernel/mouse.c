@@ -2,8 +2,6 @@
 
 #include "bootpack.h"
 
-struct FIFO8 mousefifo;
-
 void _inthandler2c(int *esp)
 /* PS/2ƒ}ƒEƒX‚©‚ç‚ÌŠ„‚è‚İ */
 {

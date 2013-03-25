@@ -2,8 +2,6 @@
 
 #include "bootpack.h"
 
-struct FIFO8 keyfifo;
-
 void _inthandler21(int *esp)
 {
 	unsigned char data;

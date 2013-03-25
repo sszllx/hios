@@ -5,4 +5,6 @@
 _start:
 ;;;         call    write_screen
    	call 	KernelMain
-	jmp	$
+fin:
+        hlt
+        jmp     fin

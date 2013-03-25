@@ -91,8 +91,10 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 #define LIMIT_IDT		0x000007ff
 #define ADR_GDT			0x00270000
 #define LIMIT_GDT		0x0000ffff
-#define ADR_BOTPAK		0x00280000
-#define LIMIT_BOTPAK	0x0007ffff
+// #define ADR_BOTPAK		0x00280000
+#define ADR_BOTPAK		0x0
+// #define LIMIT_BOTPAK	0x0007ffff
+#define LIMIT_BOTPAK	0xffffffff
 #define AR_DATA32_RW	0x4092
 #define AR_CODE32_ER	0x409a
 #define AR_INTGATE32	0x008e

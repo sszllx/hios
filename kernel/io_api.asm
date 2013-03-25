@@ -102,7 +102,6 @@ _load_idtr:		; void load_idtr(int limit, int addr);
 		RET
 
 _asm_inthandler20:
-                jmp     $
 		PUSH	ES
 		PUSH	DS
 		PUSHAD
@@ -119,7 +118,6 @@ _asm_inthandler20:
 		IRETD
 
 _asm_inthandler21:
-                jmp     $
 		PUSH	ES
 		PUSH	DS
 		PUSHAD
