@@ -97,7 +97,7 @@ Stage3:
 
 	call	ClrScr32
 
-        call	EnablePaging
+;;;         call	EnablePaging
 
 CopyImage:
   	 mov	eax, dword [ImageSize]

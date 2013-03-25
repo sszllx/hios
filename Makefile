@@ -5,7 +5,6 @@ all:
 	sudo mount -o loop os.ima mnt
 	sudo cp loader.bin mnt
 	sudo cp kernel.bin mnt
-	sudo sync
 	sudo umount mnt
 
 clean:

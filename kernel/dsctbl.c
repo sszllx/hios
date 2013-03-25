@@ -2,48 +2,31 @@
 
 #include "bootpack.h"
 
-struct SEGMENT_DESCRIPTOR _gdt[MAX_DESCRIPTORS];
-struct gdtr _gdtr;
-
 void init_gdtidt(void)
 {
-  //	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
-  struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) (_gdt);
+  struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
   struct GATE_DESCRIPTOR    *idt = (struct GATE_DESCRIPTOR    *) ADR_IDT;
-  // 18 idt
-  struct GATE_DESCRIPTOR idtVector[256];
-  unsigned char idt_ptr[6];
   int i;
-
-  /* GDTÇÃèâä˙âª */
-  //  for (i = 0; i <= LIMIT_GDT / 8; i++) {
-  /* for (i = 0; i <= 2; i++) { */
-  /*   set_segmdesc(gdt + i, 0, 0, 0); */
-  /* } */
-
-  _gdtr.m_limit = (sizeof (struct SEGMENT_DESCRIPTOR) * MAX_DESCRIPTORS)-1;
-  _gdtr.m_base = (unsigned int)&_gdt[0];
   
-  set_segmdesc(_gdt, 0, 0, 0);
-  set_segmdesc(_gdt + 1, 0xffffffff, 0x00000000, AR_DATA32_RW);
-  set_segmdesc(_gdt + 2, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER);
-  _load_gdtr(_gdtr.m_limit, _gdtr.m_base);
+  /* GDTÇÃèâä˙âª */
+  for (i = 0; i <= LIMIT_GDT / 8; i++) {
+    set_segmdesc(gdt + i, 0, 0, 0);
+  }
+  set_segmdesc(gdt + 1, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER);
+  set_segmdesc(gdt + 2, 0xffffffff,   0x00000000, AR_DATA32_RW);
+  _load_gdtr(LIMIT_GDT, ADR_GDT);
 
   /* IDTÇÃèâä˙âª */
-  /* for (i = 0; i <= LIMIT_IDT / 8; i++) { */
-  /*   set_gatedesc(idtVector + i, 0, 0, 0); */
-  /* } */
-  _load_idtr(LIMIT_IDT, (int)(idt_ptr));
-  unsigned short* p_idt_limit = (unsigned short*)(&idt_ptr[0]);
-  unsigned int* p_idt_base  = (unsigned int*)(&idt_ptr[2]);
-  *p_idt_limit = 256 * sizeof(struct GATE_DESCRIPTOR) - 1;
-  *p_idt_base  = (unsigned int)&idtVector;
+  for (i = 0; i <= LIMIT_IDT / 8; i++) {
+    set_gatedesc(idt + i, 0, 0, 0);
+  }
+  _load_idtr(LIMIT_IDT, ADR_IDT);
 
   /* IDTÇÃê›íË */
-  set_gatedesc(idtVector + 0x20, (int) _asm_inthandler20, 2 * 8, AR_INTGATE32);
-  set_gatedesc(idtVector + 0x21, (int) _asm_inthandler21, 2 * 8, AR_INTGATE32);
-  set_gatedesc(idtVector + 0x27, (int) _asm_inthandler27, 2 * 8, AR_INTGATE32);
-  set_gatedesc(idtVector + 0x2c, (int) _asm_inthandler2c, 2 * 8, AR_INTGATE32);
+  set_gatedesc(idt + 0x20, (int) _asm_inthandler20, 0x8, AR_INTGATE32);
+  // set_gatedesc(idt + 0x21, (int) _asm_inthandler21, 0x8, AR_INTGATE32);
+  //  set_gatedesc(idt + 0x27, (int) _asm_inthandler27, 2 * 8, AR_INTGATE32);
+  //  set_gatedesc(idt + 0x2c, (int) _asm_inthandler2c, 2 * 8, AR_INTGATE32);
 
   return;
 }

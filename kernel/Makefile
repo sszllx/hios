@@ -16,7 +16,7 @@ all:
 	gcc -fno-stack-protector -m32 -c -o timer.o timer.c
 # -L/usr/lib/i386-linux-gnu -lglib-2.0
 # 0x00280000
-	ld -m elf_i386 -s -Ttext 0xC0000000 -o kernel.bin kernel.o mem.o io_api.o bootpack.o dsctbl.o fifo.o graphic.o int.o keyboard.o memory.o mouse.o sheet.o timer.o 
+	ld -m elf_i386 -s -Ttext 0x00281000 -o kernel.bin kernel.o mem.o io_api.o bootpack.o dsctbl.o fifo.o graphic.o int.o keyboard.o memory.o mouse.o sheet.o timer.o 
 	cp kernel.bin ../
 clean:
 	rm loader.bin *~ *.o kernel.bin
