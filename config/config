@@ -1,0 +1,34 @@
+###############################################################
+# Configuration file for Bochs
+###############################################################
+
+# how much memory the emulated machine will have
+megs: 32
+
+# filename of ROM images
+#romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+romimage: file=$BXSHARE/BIOS-bochs-latest
+#vgaromimage: /usr/local/share/vgabios/vgabios.bin
+vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
+
+# what disk images will be used
+# floppya: 1_44=/home/lijing/code/os_test/boot-1/floppy.img, status=inserted
+# floppya: 1_44=/home/lijing/code/os_test/os_train/protect-mode/SysBoot/Stage1/win.ima, status=inserted
+# floppya: 1_44=/tmp/andy-orange-os-read-only/andy-orange-os/boot/boot.img, status=inserted
+floppya: 1_44=/home/lijing/code/os_test/os_train/github/hios/os.ima, status=inserted
+# floppya: 1_44=/home/lijing/code/os_test/os_train/tmp_test/fullversion/os.ima, status=inserted
+
+# choose the boot disk.
+boot: floppy
+
+# where do we send log messages?
+# log: bochsout.txt
+
+# disable the mouse
+mouse: enabled=1
+
+# enable key mapping, using US layout as default.
+keyboard_mapping: enabled=1, map=/usr/local/share/bochs/keymaps/x11-pc-us.map
+
+# display_library: x, options="gui_debug"
+
