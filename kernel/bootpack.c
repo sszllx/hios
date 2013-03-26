@@ -4,6 +4,7 @@
 struct FIFO8 keyfifo;
 struct FIFO8 mousefifo;
 
+void write_screen(char* addr);
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
 
 void KernelMain() {
@@ -25,8 +26,8 @@ void KernelMain() {
   fifo8_init(&keyfifo, 32, keybuf);
   fifo8_init(&mousefifo, 128, mousebuf);
   init_pit();
-  _io_out8(PIC0_IMR, 0xfe); /* PITとPIC1とキーボードを許可(11111000) */
-  _io_out8(PIC1_IMR, 0xff); /* マウスを許可(11101111) */
+  _io_out8(PIC0_IMR, 0xf8); /* PITとPIC1とキーボードを許可(11111000) */
+  _io_out8(PIC1_IMR, 0xef); /* マウスを許可(11101111) */
 
   fifo8_init(&timerfifo, 8, timerbuf);
   timer = timer_alloc();
@@ -90,19 +91,16 @@ void KernelMain() {
     } else {
       
       if (fifo8_status(&keyfifo) != 0) {
-#if 0
         i = fifo8_get(&keyfifo);
         _io_sti();
         /* sprintf(s, "%02X", i); */
         /* boxfill8(buf_back, binfo->scrnx, COL8_008484,  0, 16, 15, 31); */
         /* putfonts8_asc(buf_back, binfo->scrnx, 0, 16, COL8_FFFFFF, s); */
         /* sheet_refresh(sht_back, 0, 16, 16, 32); */
-#endif
       } else if (fifo8_status(&mousefifo) != 0) {
         i = fifo8_get(&mousefifo);
         _io_sti();
         if (mouse_decode(&mdec, i) != 0) {
-          write_screen(binfo->vram);
           /* データが3バイト揃ったので表示 */
           /* sprintf(s, "[lcr %4d %4d]", mdec.x, mdec.y); */
           /* if ((mdec.btn & 0x01) != 0) { */
