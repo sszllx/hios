@@ -14,9 +14,12 @@ all:
 	gcc -fno-stack-protector -m32 -c -o mouse.o mouse.c
 	gcc -fno-stack-protector -m32 -c -o sheet.o sheet.c
 	gcc -fno-stack-protector -m32 -c -o timer.o timer.c
-# -L/usr/lib/i386-linux-gnu -lglib-2.0
-# 0x00280000
-	ld -m elf_i386 -s -Ttext 0x00281000 -o kernel.bin kernel.o mem.o io_api.o bootpack.o dsctbl.o fifo.o graphic.o int.o keyboard.o memory.o mouse.o sheet.o timer.o 
+	gcc -m32 -c -o hankaku.o hankaku.c
+
+	nasm -f elf -o string.o lib/string.asm
+	gcc -fno-builtin-strcpy -fno-builtin-memset -fno-stack-protector -m32 -c -o vsprintf.o lib/vsprintf.c
+
+	ld -m elf_i386 -s -Ttext 0x00281000 -o kernel.bin kernel.o mem.o io_api.o bootpack.o dsctbl.o fifo.o graphic.o int.o keyboard.o memory.o mouse.o sheet.o timer.o hankaku.o string.o vsprintf.o
 	cp kernel.bin ../
 clean:
 	rm loader.bin *~ *.o kernel.bin

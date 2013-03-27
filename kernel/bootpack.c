@@ -72,18 +72,18 @@ void KernelMain() {
   sheet_updown(sht_back,  0);
   sheet_updown(sht_win,   1);
   sheet_updown(sht_mouse, 2);
-  /* sprintf(s, "(%3d, %3d)", mx, my); */
-  /* putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s); */
-  /* sprintf(s, "memory %dMB   free : %dKB", */
-  /*         memtotal / (1024 * 1024), memman_total(memman) / 1024); */
-  /* putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s); */
+  sprintf(s, "(%3d, %3d)", mx, my);
+  putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
+  sprintf(s, "memory %dMB   free : %dKB",
+          memtotal / (1024 * 1024), memman_total(memman) / 1024);
+  putfonts8_asc(buf_back, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
   sheet_refresh(sht_back, 0, 0, binfo->scrnx, binfo->scrny);
 
   for (;;) {
-    /* sprintf(s, "%010d", timerctl.count); */
-    /* boxfill8(buf_win, 160, COL8_C6C6C6, 40, 28, 119, 43); */
-    /* putfonts8_asc(buf_win, 160, 40, 28, COL8_000000, s); */
-    /* sheet_refresh(sht_win, 40, 28, 120, 44); */
+    sprintf(s, "%010d", timerctl.count);
+    boxfill8(buf_win, 160, COL8_C6C6C6, 40, 28, 119, 43);
+    putfonts8_asc(buf_win, 160, 40, 28, COL8_000000, s);
+    sheet_refresh(sht_win, 40, 28, 120, 44);
     _io_cli();
     if (fifo8_status(&keyfifo) + fifo8_status(&mousefifo) + fifo8_status(&timerfifo)/*
                                                             + fifo8_status(&timerfifo2) + fifo8_status(&timerfifo3)*/ == 0) {
@@ -102,16 +102,16 @@ void KernelMain() {
         _io_sti();
         if (mouse_decode(&mdec, i) != 0) {
           /* データが3バイト揃ったので表示 */
-          /* sprintf(s, "[lcr %4d %4d]", mdec.x, mdec.y); */
-          /* if ((mdec.btn & 0x01) != 0) { */
-          /*   s[1] = 'L'; */
-          /* } */
-          /* if ((mdec.btn & 0x02) != 0) { */
-          /*   s[3] = 'R'; */
-          /* } */
-          /* if ((mdec.btn & 0x04) != 0) { */
-          /*   s[2] = 'C'; */
-          /* } */
+          sprintf(s, "[lcr %4d %4d]", mdec.x, mdec.y);
+          if ((mdec.btn & 0x01) != 0) {
+            s[1] = 'L';
+          }
+          if ((mdec.btn & 0x02) != 0) {
+            s[3] = 'R';
+          }
+          if ((mdec.btn & 0x04) != 0) {
+            s[2] = 'C';
+          }
           /* boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31); */
           /* putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s); */
           /* sheet_refresh(sht_back, 32, 16, 32 + 15 * 8, 32); */
@@ -131,7 +131,7 @@ void KernelMain() {
             my = binfo->scrny - 1;
           }
           /* sprintf(s, "(%3d, %3d)", mx, my); */
-          /* boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 0, 79, 15); */ /* 座標消す */
+          /* boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 0, 79, 15); /\*座標消す*\/ */
           /* putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s); /\* 座標書く *\/ */
           /* sheet_refresh(sht_back, 0, 0, 80, 16); */
           sheet_slide(sht_mouse, mx, my);
