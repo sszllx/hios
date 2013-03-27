@@ -93,10 +93,10 @@ void KernelMain() {
       if (fifo8_status(&keyfifo) != 0) {
         i = fifo8_get(&keyfifo);
         _io_sti();
-        /* sprintf(s, "%02X", i); */
-        /* boxfill8(buf_back, binfo->scrnx, COL8_008484,  0, 16, 15, 31); */
-        /* putfonts8_asc(buf_back, binfo->scrnx, 0, 16, COL8_FFFFFF, s); */
-        /* sheet_refresh(sht_back, 0, 16, 16, 32); */
+        sprintf(s, "%02X", i);
+        boxfill8(buf_back, binfo->scrnx, COL8_008484,  0, 16, 15, 31);
+        putfonts8_asc(buf_back, binfo->scrnx, 0, 16, COL8_FFFFFF, s);
+        sheet_refresh(sht_back, 0, 16, 16, 32);
       } else if (fifo8_status(&mousefifo) != 0) {
         i = fifo8_get(&mousefifo);
         _io_sti();
@@ -112,9 +112,9 @@ void KernelMain() {
           if ((mdec.btn & 0x04) != 0) {
             s[2] = 'C';
           }
-          /* boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31); */
-          /* putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s); */
-          /* sheet_refresh(sht_back, 32, 16, 32 + 15 * 8, 32); */
+          boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31);
+          putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s);
+          sheet_refresh(sht_back, 32, 16, 32 + 15 * 8, 32);
           /* マウスカーソルの移動 */
           mx += mdec.x;
           my += mdec.y;
@@ -130,17 +130,17 @@ void KernelMain() {
           if (my > binfo->scrny - 1) {
             my = binfo->scrny - 1;
           }
-          /* sprintf(s, "(%3d, %3d)", mx, my); */
-          /* boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 0, 79, 15); /\*座標消す*\/ */
-          /* putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s); /\* 座標書く *\/ */
-          /* sheet_refresh(sht_back, 0, 0, 80, 16); */
+          sprintf(s, "(%3d, %3d)", mx, my);
+          boxfill8(buf_back, binfo->scrnx, COL8_008484, 0, 0, 79, 15); /*座標消す*/
+          putfonts8_asc(buf_back, binfo->scrnx, 0, 0, COL8_FFFFFF, s); /* 座標書く */
+          sheet_refresh(sht_back, 0, 0, 80, 16);
           sheet_slide(sht_mouse, mx, my);
         }
       } else if (fifo8_status(&timerfifo) != 0) {
         i = fifo8_get(&timerfifo); /* とりあえず読み込む（からにするために） */
         _io_sti();
-        /* putfonts8_asc(buf_back, binfo->scrnx, 0, 64, COL8_FFFFFF, "10[sec]"); */
-        /* sheet_refresh(sht_back, 0, 64, 56, 80); */
+        putfonts8_asc(buf_back, binfo->scrnx, 0, 64, COL8_FFFFFF, "10[sec]");
+        sheet_refresh(sht_back, 0, 64, 56, 80);
       } /* else if (fifo8_status(&timerfifo2) != 0) { */
       /*   i = fifo8_get(&timerfifo2); /\* とりあえず読み込む（からにするために） *\/ */
       /*   _io_sti(); */
