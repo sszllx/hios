@@ -14,6 +14,7 @@ bits    32
 		GLOBAL	_memtest_sub
 		EXTERN	_inthandler20, _inthandler21
 		EXTERN	_inthandler27, _inthandler2c
+                GLOBAL  _farjmp, _load_tr
 [SECTION .text]
 
 _io_hlt:	; void io_hlt(void);
@@ -196,4 +197,10 @@ mts_fin:
 		POP		EBX
 		POP		ESI
 		POP		EDI
+		RET
+_farjmp:		; void farjmp(int eip, int cs);
+		JMP		FAR	[ESP+4]				; eip, cs
+		RET
+_load_tr:		; void load_tr(int tr);
+		LTR		[ESP+4]			; tr
 		RET
